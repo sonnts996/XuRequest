@@ -49,6 +49,7 @@ class APILinkManager(QDialog):
         bar.addStretch()
         bar.addWidget(cancel, alignment=Qt.AlignRight)
         bar.addWidget(apply, alignment=Qt.AlignRight)
+        bar.setContentsMargins(0, 4, 4, 4)
 
         widget = QWidget()
         widget.setObjectName("Layout")
@@ -59,7 +60,7 @@ class APILinkManager(QDialog):
         layout.addWidget(widget)
         self.setLayout(layout)
 
-        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setContentsMargins(4, 4, 4, 4)
 
     def open_config(self):
         if os.path.isfile(get_link_file()):

@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 
+from src.main.plugin import JSONViewer
 from src.main.python.APILinkManager import APILinkManager
 from src.main.python.AboutDialog import AboutDialog
 from src.main.python.FileTreeView import FileTreeView
@@ -24,6 +25,7 @@ class Application(QMainWindow):
     def __init__(self, arg):
         super().__init__()
 
+        self.json_view = None
         self.setWindowTitle("Xu Request")
         self.menu()
 
@@ -55,8 +57,8 @@ class Application(QMainWindow):
 
     def add_tab(self, data_path):
         tab_id = str(uuid.uuid4())
-        if data_path is not None:
-            tab_id = os.path.basename(data_path)
+        # if data_path is not None:
+        #     tab_id = os.path.basename(data_path)
         w = WorkSpaceTab(self, tab_id, data_path)
         data_new = {"name": str(w), "id": tab_id}
         self.tab_manage.append(data_new)
@@ -172,6 +174,14 @@ class Application(QMainWindow):
         workspace_menu.addAction(close_tab_action)
         workspace_menu.addAction(close_all_action)
         workspace_menu.addAction(close_others_action)
+
+        json_action = QAction(QIcon(get_icon_link('json.svg')), '&JSON Viewer', self)
+        json_action.setShortcut('')
+        json_action.setStatusTip('Application information')
+        json_action.triggered.connect(self.json_viewer)
+
+        plugin_menu = main_menu.addMenu('&Plugin')
+        plugin_menu.addAction(json_action)
 
         shortcut_action = QAction(QIcon(get_icon_link('keyboard.svg')), '&Shortcut', self)
         shortcut_action.setShortcut('')
@@ -313,3 +323,9 @@ class Application(QMainWindow):
         msg = AboutDialog("html/shortcut.html")
         msg.setGeometry(int(self.x() + self.width() / 2 - 300), int(self.y() + self.height() / 2 - 200), 520, 360)
         msg.exec_()
+
+    def json_viewer(self):
+        if self.json_view is None:
+            self.json_view = JSONViewer.run([])
+        else:
+            self.json_view.showMaximized()

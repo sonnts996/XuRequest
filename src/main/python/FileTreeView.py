@@ -1,17 +1,18 @@
 import asyncio
 import json
 import os
+import shutil
 import threading
 from shutil import copyfile
 
 import watchdog.events
 import watchdog.observers
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon, QStandardItem
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QSizePolicy, QTreeView, QMenu, \
-    QAction, QMessageBox, QInputDialog
+    QAction, QMessageBox
 from send2trash import send2trash
 
 from src.main.python import Application
@@ -114,7 +115,7 @@ class FileTreeView(QWidget):
     def create_list(self, dir):
         lst = os.listdir(path=dir)
         for f in lst:
-            path = dir + "\\" + f
+            path = os.path.join(dir, f)
             file = MyFile()
             if os.path.isdir(path):
                 file.setParentName(os.path.basename(dir))
@@ -152,15 +153,15 @@ class FileTreeView(QWidget):
 
     def import_data_by_path(self, parent, path: list, index):
         if index < len(path):
-            full = "\\".join(path[:index + 1])
+            full = "/".join(path[:index + 1])
             if full in self.item_construct:
                 item = self.item_construct[full]
             else:
                 item = QStandardItem(path[index])
-                if os.path.isfile(get_data_folder() + "\\" + full):
-                    item.setToolTip(self.read_description(get_data_folder() + "\\" + full))
+                if os.path.isfile(os.path.join(get_data_folder(), full)):
+                    item.setToolTip(self.read_description(os.path.join(get_data_folder(), full)))
                 item.setEditable(False)
-                if not os.path.isdir(get_data_folder() + "\\" + full):
+                if not os.path.isdir(os.path.join(get_data_folder(), full)):
                     item.setIcon(QIcon(get_icon_link("text_snippet.svg")))
                 else:
                     item.setIcon(QIcon(get_icon_link("folder_yellow.svg")))
@@ -195,7 +196,7 @@ class FileTreeView(QWidget):
 
     def remove_single(self, file_path):
         path = self.path_extract(file_path)
-        full = "\\".join(path[:len(path)])
+        full = "/".join(path[:len(path)])
         if full in self.item_construct:
             item = self.item_construct[full]
             (item.parent() or self.model.invisibleRootItem()).removeRow(item.row())
@@ -203,14 +204,14 @@ class FileTreeView(QWidget):
 
     def path_extract(self, file_path):
         if isinstance(file_path, MyFile):
-            path = file_path.parent() + "\\" + file_path.name()
+            path = os.path.join(file_path.parent(), file_path.name())
         else:
             path = file_path
 
         path = path.replace(get_data_folder(), "")
-        if path.startswith("\\"):
-            path = path.replace("\\", "", 1)
-        path = path.split("\\")
+        if path.startswith("/"):
+            path = path.replace("/", "", 1)
+        path = path.split("/")
         return path
 
     def open_menu(self, position):
@@ -222,7 +223,7 @@ class FileTreeView(QWidget):
             index = indexes[0]
             item = self.model.itemFromIndex(index)
             data = item.data()
-            data = get_data_folder() + "\\" + data
+            data = os.path.join(get_data_folder(), data)
             if os.path.isdir(data):
                 level = 1
             else:
@@ -303,7 +304,7 @@ class FileTreeView(QWidget):
                 msg = QMessageBox()
                 msg.setStyleSheet(open(get_stylesheet()).read())
                 msg.setIcon(QMessageBox.Warning)
-
+                msg.setBaseSize(QSize(500, 300))
                 msg.setText("Delete file.")
                 msg.setInformativeText(
                     "Are you sure to detele " + os.path.basename(data) + "?")
@@ -314,7 +315,10 @@ class FileTreeView(QWidget):
 
                 rs = msg.exec_()
                 if rs == 0:
-                    os.remove(data)
+                    if os.path.isdir(data):
+                        shutil.rmtree(data)
+                    else:
+                        os.remove(data)
                 elif rs == 1:
                     send2trash(data)
         elif action == new_action:
@@ -323,18 +327,18 @@ class FileTreeView(QWidget):
             # input_name = QInputDialog()
             # input_name.setStyleSheet(open(get_stylesheet()).read())
             # text, ok = input_name.getText(self, 'New Folder', 'Folder name:')
-            inp = QComboDialog('New Folder','Folder name:', QComboDialog.Text)
+            inp = QComboDialog('New Folder', 'Folder name:', QComboDialog.Text)
             ok = inp.exec_()
             if ok and inp.select:
                 if os.path.isdir(data):
                     try:
-                        os.mkdir(data + "\\" + inp.select)
+                        os.mkdir(os.path.join(data, inp.select))
                     except Exception as ex:
                         alert = Alert("Error", "Create folder error", str(ex))
                         alert.exec_()
                         print(ex)
                 else:
-                    new = os.path.dirname(data) + "\\" + inp.select
+                    new = os.path.join(os.path.dirname(data), inp.select)
                     try:
                         os.mkdir(new)
                     except Exception as ex:
@@ -350,7 +354,7 @@ class FileTreeView(QWidget):
                 ok = inp.exec_()
                 if ok and inp.select:
                     if os.path.isdir(data):
-                        new = os.path.dirname(data) + "\\" + inp.select
+                        new = os.path.join(os.path.dirname(data), inp.select)
                         try:
                             os.rename(data, new)
                         except Exception as ex:
@@ -359,7 +363,7 @@ class FileTreeView(QWidget):
                             print(ex)
                     else:
                         filename, file_extension = os.path.splitext(data)
-                        new = os.path.dirname(data) + "\\" + inp.select + file_extension
+                        new = os.path.join(os.path.dirname(data), inp.select + file_extension)
                         try:
                             os.rename(data, new)
                         except Exception as ex:
@@ -377,7 +381,7 @@ class FileTreeView(QWidget):
                 ok = inp.exec_()
 
                 if ok and inp.select:
-                    new = get_data_folder() + "\\" + inp.select + "\\" + os.path.basename(data)
+                    new = os.path.join(get_data_folder(), inp.select, os.path.basename(data))
                     try:
                         os.rename(data, new)
                     except Exception as ex:
@@ -393,7 +397,7 @@ class FileTreeView(QWidget):
                 ok = inp.exec_()
                 if ok and inp.select:
                     filename, file_extension = os.path.splitext(data)
-                    new = os.path.dirname(data) + "\\" + inp.select + file_extension
+                    new = os.path.join(os.path.dirname(data), inp.select + file_extension)
                     try:
                         copyfile(data, new)
                     except Exception as ex:
@@ -409,7 +413,7 @@ class FileTreeView(QWidget):
                 #                                 "Select the destination folder", items, 0, False)
 
                 if ok and inp.select:
-                    new = get_data_folder() + "\\" + inp.select + "\\" + os.path.basename(data)
+                    new = os.path.join(get_data_folder(), inp.select, os.path.basename(data))
                     try:
                         copyfile(data, new)
                     except Exception as ex:
@@ -421,7 +425,7 @@ class FileTreeView(QWidget):
         item = self.model.itemFromIndex(index)
         if item is not None:
             data = item.data()
-            data = get_data_folder() + "\\" + data
+            data = os.path.join(get_data_folder(), data)
             if os.path.isdir(data):
                 level = 1
             else:

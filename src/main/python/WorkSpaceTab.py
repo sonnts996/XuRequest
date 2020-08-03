@@ -26,7 +26,7 @@ class WorkSpaceTab(QSplitter):
 
         self.setStretchFactor(0, 1)
         self.setStretchFactor(1, 2)
-        self.setContentsMargins(10, 10, 10, 10)
+        self.setContentsMargins(6, 6, 6, 6)
 
     def console(self, src="tab", arg=None):
         self.result.console(src, arg)

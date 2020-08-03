@@ -181,9 +181,9 @@ class APIResult(QSplitter):
             path = path + ".json"
         folder_name = rs.parseSave().parseFolder().name()
         if folder_name == "root":
-            path = rs.parseSave().parseFolder().parent() + "/" + path
+            path = os.path.join(rs.parseSave().parseFolder().parent(),path)
         else:
-            path = rs.parseSave().parseFolder().parent() + "/" + folder_name + "/" + path
+            path = os.path.join(rs.parseSave().parseFolder().parent() ,folder_name , path)
 
         if os.path.isfile(path):
             f = open(path, "r", encoding="utf-8")

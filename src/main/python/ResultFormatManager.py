@@ -46,6 +46,7 @@ class ResultFormatManager(QDialog):
         bar.addStretch()
         bar.addWidget(cancel, alignment=Qt.AlignRight)
         bar.addWidget(apply, alignment=Qt.AlignRight)
+        bar.setContentsMargins(0, 4, 4, 4)
 
         widget = QWidget()
         widget.setObjectName("Layout")
@@ -54,7 +55,7 @@ class ResultFormatManager(QDialog):
         layout.addWidget(self.table)
         layout.addWidget(widget)
 
-        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setContentsMargins(4, 4, 4, 4)
 
     def import_data(self, data_list):
         row = self.model.invisibleRootItem()

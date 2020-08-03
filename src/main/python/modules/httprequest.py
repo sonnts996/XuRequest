@@ -7,45 +7,57 @@ from src.main.python.model.APIResponse import APIResponse
 
 
 def post(url, api, param):
-    r = requests.post(url=url + api, json=param)
     try:
-        res = json.loads(r.content.decode("utf-8"))
-    except Exception as ex:
-        res = r.content.decode("utf-8")
-    data = APIResponse()
-    data.setHeader(dict(r.headers))
-    data.setStatus(r.status_code)
-    data.setContent(res)
-    data.setURL(r.url)
+        r = requests.post(url=url + api, json=param, timeout=30)
+        try:
+            res = json.loads(r.content.decode("utf-8"))
+        except Exception as ex:
+            res = r.content.decode("utf-8")
+        data = APIResponse()
+        data.setHeader(dict(r.headers))
+        data.setStatus(r.status_code)
+        data.setContent(res)
+        data.setURL(r.url)
+    except:
+        data = APIResponse()
+        data.setStatus(400)
     return data
 
 
 def post_param(url, api, param):
-    r = requests.post(url=url + api, json=param, params=param)
     try:
-        res = json.loads(r.content.decode("utf-8"))
-    except Exception as ex:
-        print(ex)
-        res = r.content.decode("utf-8")
-    data = APIResponse()
-    data.setHeader(dict(r.headers))
-    data.setStatus(r.status_code)
-    data.setContent(res)
-    data.setURL(r.url)
+        r = requests.post(url=url + api, json=param, params=param, timeout=30)
+        try:
+            res = json.loads(r.content.decode("utf-8"))
+        except Exception as ex:
+            print(ex)
+            res = r.content.decode("utf-8")
+        data = APIResponse()
+        data.setHeader(dict(r.headers))
+        data.setStatus(r.status_code)
+        data.setContent(res)
+        data.setURL(r.url)
+    except:
+        data = APIResponse()
+        data.setStatus(400)
     return data
 
 
 def get(url, api, param):
-    r = requests.get(url=url + api, params=param)
     try:
-        res = json.loads(r.content.decode("utf-8"))
-    except Exception as ex:
-        res = r.content.decode("utf-8")
-    data = APIResponse()
-    data.setHeader(dict(r.headers))
-    data.setStatus(r.status_code)
-    data.setContent(res)
-    data.setURL(r.url)
+        r = requests.get(url=url + api, params=param, timeout=30)
+        try:
+            res = json.loads(r.content.decode("utf-8"))
+        except Exception as ex:
+            res = r.content.decode("utf-8")
+        data = APIResponse()
+        data.setHeader(dict(r.headers))
+        data.setStatus(r.status_code)
+        data.setContent(res)
+        data.setURL(r.url)
+    except:
+        data = APIResponse()
+        data.setStatus(400)
     return data
 
 

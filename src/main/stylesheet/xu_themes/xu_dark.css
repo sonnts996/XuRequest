@@ -18,13 +18,14 @@ QGroupBox, QSplitter {
 }
 
 QGroupBox::title {
+    max-height: 16px;
     background-color: #636363;
     border-left: 2px solid orangered;
-    padding: 8px 2000px 4px 8px;
+    padding: 4px 2000px 4px 8px;
 }
 
 QGroupBox {
-    padding: 24px 0 0 0;
+    padding: 28px 0 0 0;
 }
 
 QTextEdit, QLineEdit {
@@ -52,8 +53,13 @@ QPushButton:hover {
     background-color: orangered;
 }
 
+QDialog PushButton{
+    min-width: 100px;
+}
+
 QTabWidget::pane {
     border-top: 1px solid orangered;
+    padding-top: 5px;
 }
 
 QTabBar, QTabWidget {
@@ -293,7 +299,6 @@ QColumnView::item:selected:active {
     outline: 0;
     border: none;
     background-color: chocolate;
-    text-outline: none;
 }
 
 QTreeView::item:!selected:hover,
@@ -304,6 +309,15 @@ QColumnView::item:!selected:hover {
     border: none;
     color: white;
     background-color: coral;
+}
+
+QTreeView QLineEdit,
+QListView QLineEdit,
+QTableView QLineEdit,
+QColumnView QLineEdit {
+    outline: none;
+    border: none;
+    border-radius: 0;
 }
 
 QTableView::indicator:checked {
@@ -322,12 +336,14 @@ QHeaderView {
     background-color: #ff7b64;
     color: #F0F0F0;
     padding: 4px 8px 4px 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 QHeaderView::section {
     background-color: #ff7b64;
     color: #FFFFFF;
-    padding: 2px;
+    padding: 2px 2px 2px 8px;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
     text-align: left;

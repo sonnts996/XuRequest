@@ -21,7 +21,7 @@ class APIConfigure(QSplitter):
     tab_id = ""
 
     def get_list_view(self):
-        lv =QListView()
+        lv = QListView()
         lv.setAlternatingRowColors(True)
         return lv
 
@@ -40,32 +40,32 @@ class APIConfigure(QSplitter):
         self.tab_id = tab_id
         self.level = 0
         self.api_data = APIData()
-        if data is not None:
-            self.file_data = MyFile()
-            self.file_data.setParent(os.path.dirname(data))
-            self.file_data.setName(os.path.basename(data))
-            self.file_data.setDir(os.path.isdir(data))
-            self.file_data.setParentName(os.path.basename(os.path.dirname(data)))
 
-            folder_path = os.path.dirname(data)
-            folder_data = MyFile()
-            folder_data.setParent(os.path.dirname(folder_path))
-            folder_data.setName(os.path.basename(folder_path))
-            folder_data.setDir(os.path.isdir(folder_path))
-            folder_data.setParentName(os.path.basename(os.path.dirname(folder_path)))
-
-            save = self.api_data.parseSave()
-            save.setFolder(folder_data)
-            save.setName(os.path.basename(data))
-        else:
-            self.file_data = None
         self.api_json = []
         self.list_folder = []
 
+        self.file_data = MyFile()
         if data is not None:
             try:
                 api_data = json.loads(open(data).read())
                 self.api_data.construct(api_data)
+
+                self.file_data.setParent(os.path.dirname(data))
+                self.file_data.setName(os.path.basename(data))
+                self.file_data.setDir(os.path.isdir(data))
+                self.file_data.setParentName(os.path.basename(os.path.dirname(data)))
+
+                folder_path = os.path.dirname(data)
+                folder_data = MyFile()
+                folder_data.setParent(os.path.dirname(folder_path))
+                folder_data.setName(os.path.basename(folder_path))
+                folder_data.setDir(os.path.isdir(folder_path))
+                folder_data.setParentName(os.path.basename(os.path.dirname(folder_path)))
+
+                save = self.api_data.parseSave()
+                save.setFolder(folder_data)
+                save.setName(os.path.basename(data))
+                self.api_data.setSave(save)
             except Exception as ex:
                 self.console.emit("Load data 1:", str(ex))
                 print(ex)
@@ -170,9 +170,13 @@ class APIConfigure(QSplitter):
 
         self.w_description.setText(self.api_data.parseSave().description())
 
+        api_layout = QHBoxLayout()
+        api_layout.addWidget(self.w_api_type)
+        api_layout.addWidget(self.w_api)
+
         l_box = QVBoxLayout()
-        l_box.addWidget(self.w_api, alignment=Qt.AlignTop)
-        l_box.addLayout(label_widget("Protocol: ", self.w_api_type, 120))
+        l_box.addLayout(api_layout)
+        # l_box.addLayout(label_widget("Protocol: ", self.w_api_type, 120))
         l_box.addLayout(label_widget("API Link: ", self.w_api_link, 120))
         l_box.addLayout(label_widget("Parameter type: ", self.w_api_param, 120))
         l_box.addLayout(out_save_box)
@@ -197,16 +201,20 @@ class APIConfigure(QSplitter):
         folder = self.api_data.parseSave().parseFolder()
         if folder.name() == 'root':
             for data in self.list_folder:
-                name = data.parent() + "\\" + data.name()
+                name = os.path.join(data.parent(), data.name())
                 name = name.replace(get_data_folder(), "")
+                if name == "/root":
+                    name = "root"
                 self.folder.addItem(name, data)
             self.folder.setCurrentIndex(0)
         else:
             index = 0
             count = 0
             for data in self.list_folder:
-                name = data.parent() + "\\" + data.name()
+                name = os.path.join(data.parent(), data.name())
                 name = name.replace(get_data_folder(), "")
+                if name == "/root":
+                    name = "root"
                 self.folder.addItem(name, data)
                 if folder.parent() == data.parent() and folder.name() == data.name():
                     index = count
@@ -261,7 +269,7 @@ class APIConfigure(QSplitter):
     def load_folder(self, parent_dir):
         lst = os.listdir(path=parent_dir)
         for f in lst:
-            path = parent_dir + "\\" + f
+            path = os.path.join(parent_dir, f)
             file = MyFile()
             if os.path.isdir(path):
                 file.setParent(parent_dir)

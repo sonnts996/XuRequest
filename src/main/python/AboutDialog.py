@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -13,7 +15,8 @@ class AboutDialog(QDialog):
         self.setWindowTitle("XuRequest")
         self.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
         browser = QWebEngineView()
-        path = get_relative() + "\\" + file
+        path = os.path.join(get_relative(), file)
+        print(path)
         local_url = QUrl.fromLocalFile(path)
         browser.load(local_url)
         browser.show()

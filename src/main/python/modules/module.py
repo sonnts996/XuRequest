@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextDocument
@@ -55,39 +56,54 @@ def get_user_folder():
 
 
 def get_app_folder():
-    data = get_user_folder() + "\\HttpRequest"
-
-    if not os.path.exists(data):
-        os.makedirs(data)
-
+    data = os.path.join(get_user_folder(), "XuRequest")
+    linux_mkdir(data, "XuRequest")
     return data
 
 
-def get_data_folder():
-    data = get_app_folder() + "\\data"
+def linux_mkdir(path, name):
+    plt = platform.system()
+    if plt == "Windows":
+        if not os.path.exists(path):
+            os.makedirs(path)
+    elif plt == "Linux":
+        if not os.path.exists(path):
+            try:
+                os.makedirs(path)
+            except PermissionError as pe:
+                os.chdir(get_user_folder())
+                os.makedirs(name, 0o777)
+                os.chdir(current_dir())
+    elif plt == "Darwin":
+        print("Your system is MacOS")
+        # do x y z
+    else:
+        print("Unidentified system")
 
-    if not os.path.exists(data):
-        os.makedirs(data)
+
+def get_data_folder():
+    data = os.path.join(get_app_folder(), "data")
+
+    linux_mkdir(data, "data")
 
     return data
 
 
 def get_config_folder():
-    data = get_app_folder() + "\\config"
+    data = os.path.join(get_app_folder(), "config")
 
-    if not os.path.exists(data):
-        os.makedirs(data)
+    linux_mkdir(data, "config")
 
     return data
 
 
 def get_last_open_file():
-    data = get_config_folder() + "\\last_open.json"
+    data = os.path.join(get_config_folder(), "last_open.json")
     return data
 
 
 def get_link_file():
-    data = get_config_folder() + "\\api_link.json"
+    data = os.path.join(get_config_folder(), "api_link.json")
     return data
 
 
