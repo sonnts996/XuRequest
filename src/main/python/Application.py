@@ -6,12 +6,12 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 
-from src.main.plugin.viewer import JSONApplication
+from src.main.python.json_viewer import JSONApplication
 from src.main.python.APILinkManager import APILinkManager
-from src.main.python.AboutDialog import AboutDialog
+from src.main.python.dialog.AboutDialog import AboutDialog
 from src.main.python.FileTreeView import FileTreeView
 from src.main.python.WorkSpaceTab import WorkSpaceTab
-from src.main.python.modules.module import get_icon_link, get_user_folder, get_last_open_file
+from src.main.python.modules.module import *
 
 
 class Application(QMainWindow):
@@ -142,9 +142,9 @@ class Application(QMainWindow):
         format_action.setStatusTip('Format result')
         format_action.triggered.connect(self.format_api)
 
-        format_object_action = QAction(QIcon(get_icon_link('star.svg')), '&Format with object', self)
+        format_object_action = QAction(QIcon(get_icon_link('star_orange.svg')), '&Format with object', self)
         format_object_action.setShortcut('Ctrl+B')
-        format_object_action.setStatusTip('Format result with String Object')
+        format_object_action.setStatusTip('Format result object as JSON')
         format_object_action.triggered.connect(self.format_api_object)
 
         run_menu = main_menu.addMenu('&Run')
@@ -183,11 +183,6 @@ class Application(QMainWindow):
         plugin_menu = main_menu.addMenu('&Plugin')
         plugin_menu.addAction(json_action)
 
-        shortcut_action = QAction(QIcon(get_icon_link('keyboard.svg')), '&Shortcut', self)
-        shortcut_action.setShortcut('')
-        shortcut_action.setStatusTip('Application shortcut')
-        shortcut_action.triggered.connect(self.shortcut_show)
-
         about_action = QAction(QIcon(get_icon_link('live_help.svg')), '&About', self)
         about_action.setShortcut('')
         about_action.setStatusTip('Application information')
@@ -195,7 +190,6 @@ class Application(QMainWindow):
 
         help_menu = main_menu.addMenu('&Help')
         help_menu.addAction(about_action)
-        # help_menu.addAction(shortcut_action)
 
         self.setMenuBar(main_menu)
 
@@ -316,11 +310,6 @@ class Application(QMainWindow):
 
     def about_show(self):
         msg = AboutDialog("html/about.html")
-        msg.setGeometry(int(self.x() + self.width() / 2 - 300), int(self.y() + self.height() / 2 - 200), 520, 360)
-        msg.exec_()
-
-    def shortcut_show(self):
-        msg = AboutDialog("html/shortcut.html")
         msg.setGeometry(int(self.x() + self.width() / 2 - 300), int(self.y() + self.height() / 2 - 200), 520, 360)
         msg.exec_()
 

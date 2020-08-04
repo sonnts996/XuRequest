@@ -18,11 +18,10 @@ from send2trash import send2trash
 from src.main.python import Application
 from src.main.python.model.APIData import APIData
 from src.main.python.model.MyFile import MyFile
-from src.main.python.modules.Alert import Alert
+from src.main.python.dialog.Alert import Alert
 from src.main.python.modules.ProcessRunnable import ProcessRunnable
-from src.main.python.modules.QComboDialog import QComboDialog
-from src.main.python.modules.module import get_icon_link, get_data_folder, get_list_folder
-from src.main.python.modules.module import get_stylesheet
+from src.main.python.dialog.QComboDialog import QComboDialog
+from src.main.python.modules.module import *
 from src.main.python.modules.watchdog_data import watch_winform
 
 

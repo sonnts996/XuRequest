@@ -4,14 +4,6 @@ QWidget {
     font-size: 13px;
 }
 
-QWidget#Layout {
-    background-color: #363636;
-}
-
-#Layout {
-    background-color: #363636;
-}
-
 QGroupBox, QSplitter {
     background-color: #363636;
     color: #FFFFFF;
@@ -39,10 +31,6 @@ QTextEdit, QLineEdit {
     font-size: 14px;
 }
 
-#FrameTab::pane{
-    padding: 8px 8px 8px 0;
-}
-
 QLabel {
     background-color: transparent;
     color: #CCCCCC;
@@ -59,7 +47,7 @@ QPushButton:hover {
     background-color: orangered;
 }
 
-QDialog PushButton{
+QDialog PushButton {
     min-width: 100px;
 }
 
@@ -436,7 +424,7 @@ QComboBox::item:selected {
 }
 
 QMenuBar {
-    background-color: #ff7b64;
+    background-color: #636363;
     padding: 2px;
     color: #F0F0F0;
 }
@@ -485,4 +473,29 @@ QMenu::item {
 
 QMenu::item:selected {
     background-color: coral;
+}
+
+QWidget#Layout {
+    background-color: #363636;
+}
+
+#Layout {
+    background-color: #363636;
+}
+
+#WindowTab::pane {
+    padding: 8px 8px 8px 0;
+}
+
+#WindowTab QTabBar::tab:top{
+    margin-top: 8px;
+}
+
+#FrameTab::pane {
+    padding: 0;
+}
+
+#FrameTab::pane:top {
+    border-top: 0;
+    padding-top: 0;
 }

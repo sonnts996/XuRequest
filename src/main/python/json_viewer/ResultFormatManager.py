@@ -1,10 +1,9 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import QDialog, QTableView, QPushButton, QHBoxLayout, QVBoxLayout, QWidget
 
-from src.main.python.modules.module import get_stylesheet, get_icon_base
+from src.main.python.modules.module import *
 
 
 class ResultFormatManager(QDialog):
@@ -15,7 +14,7 @@ class ResultFormatManager(QDialog):
         super().__init__()
         self.setStyleSheet(open(get_stylesheet()).read())
         self.setWindowTitle(name)
-        self.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
+        self.setWindowIcon(QIcon(get_icon_base(get_window_icon())))
         # self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
         self.setAttribute(Qt.WA_QuitOnClose)
         self.data_json = data
@@ -93,4 +92,3 @@ class ResultFormatManager(QDialog):
 
         self.apply_done.emit(self.data_json)
         self.destroy()
-

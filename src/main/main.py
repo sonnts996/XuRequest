@@ -5,15 +5,15 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 from src.main.dir import current_dir
-from src.main.plugin.viewer import JSONApplication
+from src.main.python.json_viewer import JSONApplication
 from src.main.python.Application import Application
-from src.main.python.modules.module import get_icon_base, get_stylesheet
+from src.main.python.modules.module import *
 
 
 def show_request(argv):
     app = QApplication(sys.argv)
     window = Application(argv)
-    window.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
+    window.setWindowIcon(QIcon(get_icon_base(get_window_icon())))
     window.setStyleSheet(open(get_stylesheet()).read())
     window.showMaximized()
     app.setQuitOnLastWindowClosed(True)

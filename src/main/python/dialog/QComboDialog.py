@@ -1,8 +1,8 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QComboBox, QListView, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog, QComboBox, QListView, QPushButton, QVBoxLayout, QHBoxLayout, QLineEdit
 
-from src.main.python.modules.module import get_stylesheet, get_icon_base
+from src.main.python.modules.module import *
 
 
 class QComboDialog(QDialog):
@@ -17,7 +17,7 @@ class QComboDialog(QDialog):
             data = []
         self.setStyleSheet(open(get_stylesheet()).read())
         self.setWindowTitle(title)
-        self.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
+        self.setWindowIcon(QIcon(get_icon_base(get_window_icon())))
         self.tpe = tpe
 
         text = QLabel(text)

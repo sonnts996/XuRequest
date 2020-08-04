@@ -1,21 +1,13 @@
-import json
-import os
-
-from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QGroupBox, QPushButton, QSplitter, QCheckBox, \
-    QSizePolicy, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGroupBox, QSplitter, QMessageBox, QLineEdit
 
-from src.main.plugin.viewer import JSONApplication
 from src.main.python import Application
-from src.main.python.ResultFormatManager import ResultFormatManager
+from src.main.python.json_viewer import JSONApplication
+from src.main.python.json_viewer.JSONEditor import JSONEditor
 from src.main.python.model.APIData import APIData
 from src.main.python.model.APIResponse import APIResponse
-from src.main.python.modules import httprequest, jsonpretty
-from src.main.python.modules.JSONEditor import JSONEditor
-from src.main.python.modules.module import get_icon_link, color_json
-from src.main.python.modules.module import get_stylesheet
+from src.main.python.modules.module import *
+from src.main.python.request import httprequest
 
 
 class APIResult(QSplitter):
@@ -24,17 +16,13 @@ class APIResult(QSplitter):
 
     def __init__(self, parent: Application, tab_id: str, data):
         super().__init__()
-        self.w_format_field = QLineEdit()
-        self.w_format_label = QCheckBox()
-        self.w_result = JSONEditor()
+        self.new_result = JSONApplication.JSONApplication(1)
         self.w_console = JSONEditor()
         self.w_status_code = QLabel()
         self.w_url = QLineEdit()
         self.viewer = None
 
-        self.format_manager = None
         self.api_data = APIData()
-        self.format_backup = []
         self.tab_id = tab_id
 
         parent.tab_close.connect(self.handle_close)
@@ -55,17 +43,14 @@ class APIResult(QSplitter):
 
     def handle_close(self, tab_id="app"):
         if tab_id == self.tab_id or tab_id == "app":
-            if self.format_manager is not None:
-                self.format_manager.destroy()
-                self.format_manager = None
+            self.new_result.close()
 
     def tab_action(self, tab_id, action, exc=False):
         if tab_id == self.tab_id:
             if action == "format":
-                self.format_result()
+                self.new_result.sync_api()
             elif action == "format_object":
-                self.w_format_label.setCheckState(True)
-                self.format_result()
+                self.new_result.format_api()
 
     def component(self):
         self.w_url.setText("Url: ")
@@ -89,42 +74,12 @@ class APIResult(QSplitter):
         w_gr_console.setTitle("Console")
         w_gr_console.setLayout(w_gr_vbox_console)
 
-        w_format = QPushButton()
-        w_format.setText("Format")
-        w_format.setIcon(QIcon(get_icon_link('star.svg')))
-        w_format.setToolTip("Format result (Ctrl+B)")
-        w_format.pressed.connect(self.format_result)
-
-        w_open_view = QPushButton()
-        w_open_view.setIcon(QIcon(get_icon_link('open_in_new.svg')))
-        w_open_view.setToolTip("JSON Viewer")
-        w_open_view.pressed.connect(self.open_view)
-
-        self.w_format_field.setSizePolicy(QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed))
-        self.set_format_text(self.api_data.parseConfig().format())
-        self.format_backup = self.api_data.parseConfig().format()
-
-        self.w_format_field.installEventFilter(self)
-        self.w_format_field.setEnabled(False)
-
-        self.w_format_label.setText("String object: ")
-
-        l_hbox = QHBoxLayout()
-        l_hbox.addWidget(self.w_format_label, alignment=Qt.AlignLeft)
-        l_hbox.addWidget(self.w_format_field)
-        l_hbox.addWidget(w_format, alignment=Qt.AlignRight)
-        l_hbox.addWidget(w_open_view, alignment=Qt.AlignRight)
-
-        w_gr_vbox_result = QVBoxLayout()
-        w_gr_vbox_result.addLayout(l_hbox)
-
-        self.w_result.setDocument(color_json(self.api_data.parseReponse().content()))
-
-        w_gr_vbox_result.addWidget(self.w_result)
+        self.new_result.load(self.api_data.parseReponse().content())
 
         w_gr_result = QGroupBox()
-        w_gr_result.setTitle("Result")
-        w_gr_result.setLayout(w_gr_vbox_result)
+        w_gr_result.setTitle("result")
+        w_gr_result.setLayout(QVBoxLayout())
+        w_gr_result.layout().addWidget(self.new_result)
 
         self.addWidget(w_gr_console)
         self.addWidget(w_gr_result)
@@ -139,16 +94,13 @@ class APIResult(QSplitter):
             self.w_console.setDocument(new)
 
     def result(self, rs: APIData, is_save: bool, is_save_only=True):
-        cfg = rs.parseConfig()
-        cfg.setFormat(self.format_backup)
-        rs.setConfig(cfg)
         if is_save_only:
             res = self.api_data.parseReponse()
-            res.setContent(self.w_result.toPlainText())
+            res.setContent(self.new_result.viewer().text())
             rs.setResponse(res)
 
         self.api_data = rs
-        self.format_result()
+        self.new_result.load(rs.parseReponse().content())
 
         status = self.print_status(rs.parseReponse().status())
         self.w_status_code.setText(status)
@@ -163,16 +115,6 @@ class APIResult(QSplitter):
                 self.show_ask_save_dialog(self.print_status(rs.parseReponse().status()), rs)
             else:
                 self.save(rs)
-
-    def open_view(self):
-        data = self.w_result.toPlainText()
-        if self.viewer is None:
-            self.viewer = JSONApplication.run()
-            self.viewer.load(data, self.tab_id, self.api_data.parseConfig().api())
-            self.viewer.showMaximized()
-        else:
-            self.viewer.load(data, self.tab_id, self.api_data.parseConfig().api())
-            self.viewer.showMaximized()
 
     def show_ask_save_dialog(self, res: str, rs: APIData):
         msg = QMessageBox()
@@ -253,62 +195,3 @@ class APIResult(QSplitter):
 
     def print_status(self, r: int):
         return httprequest.print_response(r) + ": " + str(r)
-
-    def format_result(self):
-        result = self.api_data.parseReponse().content()
-        if not self.w_format_label.isChecked():
-            self.w_result.setDocument(color_json(result))
-        else:
-            if not self.format_backup:
-                self.w_result.setDocument(color_json(result))
-            else:
-                if isinstance(result, dict) or isinstance(result, list):
-                    self.exe_format_result(result, self.format_backup)
-                else:
-                    self.w_result.setDocument(color_json(result))
-
-    def exe_format_result(self, rs, ftm: list):
-        new = jsonpretty.extract(rs, ftm)
-        self.w_result.setDocument(color_json(new))
-
-    def open_format_manager(self):
-        name = self.api_data.parseSave().name()
-        if name == "":
-            name = name + " - Format Result"
-        else:
-            name = "New Request - Format Result"
-
-        if self.format_manager is not None:
-            self.format_manager.destroy()
-            self.format_manager = None
-
-        self.format_manager = ResultFormatManager(name, self.format_backup)
-        self.format_manager.setModal(False)
-        self.format_manager.setGeometry(int(self.x() + self.width() / 2 - 300), int(self.y() + self.height() / 2 - 200),
-                                        520, 360)
-        self.format_manager.apply_done.connect(self.format_manager_done)
-        self.format_manager.apply_cancel.connect(self.format_manager_cancel)
-        self.format_manager.setVisible(True)
-        self.format_manager.show()
-
-    def format_manager_done(self, data: list):
-        self.format_backup = data.copy()
-        self.set_format_text(data)
-        self.format_manager = None
-
-    def set_format_text(self, data: list):
-        s = ""
-        for d in data:
-            s += "," + d
-        if len(s) > 1:
-            s = s[1:]
-        self.w_format_field.setText(s)
-
-    def format_manager_cancel(self):
-        self.format_manager = None
-
-    def eventFilter(self, widget, event):
-        if widget == self.w_format_field and event.type() == QEvent.MouseButtonPress:
-            self.open_format_manager()
-            return True
-        return False

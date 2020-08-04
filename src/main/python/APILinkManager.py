@@ -1,15 +1,10 @@
-import json
-import os
-
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import QDialog, QTableView, QHBoxLayout, QVBoxLayout, QPushButton, QWidget
 
 from src.main.python.model.APILink import APILink
-from src.main.python.modules.module import get_link_file, get_icon_base
-from src.main.python.modules.module import get_stylesheet
+from src.main.python.modules.module import *
 
 
 class APILinkManager(QDialog):
@@ -19,7 +14,7 @@ class APILinkManager(QDialog):
         super().__init__()
         self.setStyleSheet(open(get_stylesheet()).read())
         self.setWindowTitle("API Link manager")
-        self.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
+        self.setWindowIcon(QIcon(get_icon_base(get_window_icon())))
         self.data_json = []
         self.open_config()
 

@@ -10,8 +10,8 @@ from src.main.python.model.APILink import APILink
 from src.main.python.model.APIResponse import APIResponse
 from src.main.python.model.APISave import APISave
 from src.main.python.model.MyFile import MyFile
-from src.main.python.modules import httprequest
-from src.main.python.modules.ParamEditor import ParamEditor
+from src.main.python.request import httprequest
+from src.main.python.json_viewer.ParamEditor import ParamEditor
 from src.main.python.modules.module import *
 
 

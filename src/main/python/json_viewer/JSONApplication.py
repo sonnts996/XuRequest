@@ -1,32 +1,40 @@
-import os
 import sys
 import uuid
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QMenuBar, QAction, QFileDialog
+from PyQt5.QtGui import QIcon, QCloseEvent
+from PyQt5.QtWidgets import QApplication, QMenuBar, QAction, QFileDialog, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 from PyQt5.QtWidgets import QMainWindow
 
-from src.main.dir import current_dir
-from src.main.plugin.viewer.JSONViewer import JSONViewer
-from src.main.python.AboutDialog import AboutDialog
-from src.main.python.modules.module import get_icon_base, get_stylesheet, get_icon_link, get_last_open_file, \
-    get_user_folder
+from src.main.python.dialog.AboutDialog import AboutDialog
+from src.main.python.json_viewer.JSONViewer import JSONViewer
+from src.main.python.modules.module import *
 
 os.chdir(current_dir())
 
 
 class JSONApplication(QMainWindow):
     tab_action = pyqtSignal(str)
+    window_mode = 0
+    widget_mode = 1
+    mode = widget_mode
 
-    def __init__(self):
+    def __init__(self, mode=0):
         super().__init__()
-        self.setWindowIcon(QIcon(get_icon_base("main_window_icon.png")))
-        self.setWindowTitle("JSONViewer")
-        self.setStyleSheet(open(get_stylesheet()).read())
-        self.menu()
-        self.viewer = JSONViewer()
-        self.setCentralWidget(self.viewer)
+        if mode == 0:
+            self.setWindowIcon(QIcon(get_icon_base(get_window_icon(1))))
+            self.setWindowTitle("JSONViewer")
+            self.setStyleSheet(open(get_stylesheet()).read())
+            self.menu()
+            self.viewer = JSONViewer()
+            self.setCentralWidget(self.viewer)
+        else:
+            self.viewer = JSONViewer(JSONViewer.widget_mode)
+            self.setCentralWidget(self.viewer)
+
+    def closeEvent(self, a0: QCloseEvent):
+        if self.viewer.fmg is not None:
+            self.viewer.fmg.close()
 
     def load(self, data, tab_id=None, tab_name="Untitled", is_path=False):
         if tab_id is None:
@@ -41,6 +49,10 @@ class JSONApplication(QMainWindow):
             self.viewer.load(data, tab_id, tab_name)
         else:
             self.viewer.load(data, tab_id, tab_name)
+
+    def viewer(self):
+        index = self.viewer.currentIndex()
+        return self.viewer.widget(index)
 
     def menu(self):
         main_menu = QMenuBar()
@@ -78,7 +90,7 @@ class JSONApplication(QMainWindow):
         clear_action.setStatusTip('Sync param')
         clear_action.triggered.connect(self.sync_api)
 
-        format_action = QAction(QIcon(get_icon_link('star.svg')), '&.. as JSON', self)
+        format_action = QAction(QIcon(get_icon_link('star.svg')), '.. as JSON', self)
         format_action.setShortcut('Ctrl+B')
         format_action.setStatusTip('Try read object as JSON')
         format_action.triggered.connect(self.format_api)
@@ -196,7 +208,7 @@ if __name__ == '__main__':
     arg = ""
     if len(sys.argv) > 1:
         arg = sys.argv[1:]
-    window = JSONViewer.run(arg)
+    window = run(arg)
     app.setQuitOnLastWindowClosed(True)
     exit_code = app.exec_()
     sys.exit(exit_code)

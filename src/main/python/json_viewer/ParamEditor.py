@@ -6,8 +6,8 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import QTabWidget, QTreeView, QMenu, QAction, QInputDialog
 
-from src.main.python.modules.JSONEditor import JSONEditor
-from src.main.python.modules.module import color_json, get_stylesheet, get_icon_link
+from src.main.python.json_viewer.JSONEditor import JSONEditor
+from src.main.python.modules.module import *
 
 
 class ParamEditor(QTabWidget):

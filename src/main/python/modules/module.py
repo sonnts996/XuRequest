@@ -12,6 +12,11 @@ from src.main.dir import current_dir
 
 list_ = []
 
+def get_window_icon(index=0):
+    if index == 0:
+        return "it.svg"
+    elif index == 1:
+        return "json.svg"
 
 def get_relative(relative_path=None):
     main = current_dir()
@@ -113,7 +118,7 @@ def get_stylesheet():
 
 def color_json(obj):
     doc = QTextDocument()
-    doc.setDefaultStyleSheet(open(get_relative('stylesheet/json_style.css')).read())
+    doc.setDefaultStyleSheet(open(get_relative('stylesheet/xu_themes/json_style.css')).read())
 
     if isinstance(obj, str):
         doc.setHtml(string_to_html(obj))
