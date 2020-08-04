@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -27,18 +28,19 @@ class JSONApplication(QMainWindow):
         self.viewer = JSONViewer()
         self.setCentralWidget(self.viewer)
 
-    def load(self, data, tab_name, is_path=False):
+    def load(self, data, tab_id=None, tab_name="Untitled", is_path=False):
+        if tab_id is None:
+            tab_id = str(uuid.uuid4())
         if tab_name == "" or tab_name.isspace():
-            tab_name = "Unknown Tab"
+            tab_name = "Untitled"
         if is_path:
             try:
                 data = open(data, encoding="utf-8").read()
             except Exception as ex:
                 data = str(ex)
-            self.viewer.load(data, tab_name)
+            self.viewer.load(data, tab_id, tab_name)
         else:
-            self.viewer.load(data, tab_name)
-
+            self.viewer.load(data, tab_id, tab_name)
 
     def menu(self):
         main_menu = QMenuBar()
@@ -56,7 +58,7 @@ class JSONApplication(QMainWindow):
         save_action = QAction(QIcon(get_icon_link('save.svg')), '&Save', self)
         save_action.setShortcut('Ctrl+S')
         save_action.setStatusTip('Save API')
-        # save_action.triggered.connect(self.save_api)
+        save_action.triggered.connect(self.save_api)
 
         exit_action = QAction(QIcon(get_icon_link('exit_to_app.svg')), '&Exit', self)
         exit_action.setShortcut('Ctrl+Q')
@@ -74,22 +76,16 @@ class JSONApplication(QMainWindow):
         clear_action = QAction(QIcon(get_icon_link('refresh.svg')), '&Sync', self)
         clear_action.setShortcut('Ctrl+Shift+C')
         clear_action.setStatusTip('Sync param')
-        # clear_action.triggered.connect(self.sync_api)
+        clear_action.triggered.connect(self.sync_api)
 
-        format_action = QAction(QIcon(get_icon_link('star.svg')), '&Format', self)
+        format_action = QAction(QIcon(get_icon_link('star.svg')), '&.. as JSON', self)
         format_action.setShortcut('Ctrl+B')
-        format_action.setStatusTip('Format result')
-        # format_action.triggered.connect(self.format_api)
-
-        format_object_action = QAction(QIcon(get_icon_link('star.svg')), '&Format with object', self)
-        format_object_action.setShortcut('Ctrl+B')
-        format_object_action.setStatusTip('Format result with String Object')
-        # format_object_action.triggered.connect(self.format_api_object)
+        format_action.setStatusTip('Try read object as JSON')
+        format_action.triggered.connect(self.format_api)
 
         run_menu = main_menu.addMenu('&JSON')
         run_menu.addAction(clear_action)
         run_menu.addAction(format_action)
-        run_menu.addAction(format_object_action)
 
         close_tab_action = QAction(QIcon(get_icon_link('close.svg')), '&Close Tab', self)
         close_tab_action.setShortcut('Ctrl+W')
@@ -122,7 +118,8 @@ class JSONApplication(QMainWindow):
         self.setMenuBar(main_menu)
 
     def new_call(self):
-        self.load({}, "New Tab")
+        tab_id = str(uuid.uuid4())
+        self.load({}, tab_id)
 
     def open_call(self):
         init_dir = get_user_folder()
@@ -142,7 +139,8 @@ class JSONApplication(QMainWindow):
             fout = open(get_last_open_file(), "w", encoding="utf-8")
             fout.write(os.path.dirname(name[0]))
             fout.close()
-            self.load(name[0], os.path.basename(name[0]), True)
+            tab_id = str(uuid.uuid4())
+            self.load(name[0], tab_id, os.path.basename(name[0]), True)
             self.viewer.setCurrentIndex(self.viewer.count() - 1)
 
     def exit(self):
@@ -171,31 +169,25 @@ class JSONApplication(QMainWindow):
         msg.exec_()
 
     def sync_api(self):
-        self.tab_action.emit("sync")
-
-    def format_api(self):
-        self.tab_action.emit("format")
-
-    def format_api_object(self):
-        self.tab_action.emit("format_object")
+        self.viewer.tab_action("sync")
 
     def save_api(self):
-        self.tab_action.emit("save")
+        self.viewer.tab_action("save")
+
+    def format_api(self):
+        self.viewer.tab_action("format")
 
 
 def run(argv=None):
     view = JSONApplication()
-    if argv is None:
-        view.load({}, "New Tab")
-    else:
+    if argv is not None:
+        tab_id = str(uuid.uuid4())
         if len(argv) > 1:
             for arv in argv:
                 if os.path.isfile(arv):
-                    view.load(arv, os.path.basename(arv), True)
+                    view.load(arv, tab_id, os.path.basename(arv), True)
                 else:
-                    view.load(arv, "Unknown Tab")
-        else:
-            view.load({}, "New Tab")
+                    view.load(arv, tab_id)
     return view
 
 

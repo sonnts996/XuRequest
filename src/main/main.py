@@ -24,6 +24,7 @@ def show_request(argv):
 def show_json_view(argv):
     app = QApplication(sys.argv)
     window = JSONApplication.run(argv)
+    window.load({})
     window.showMaximized()
     app.setQuitOnLastWindowClosed(True)
     exit_code = app.exec_()

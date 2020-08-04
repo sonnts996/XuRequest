@@ -381,7 +381,10 @@ class FileTreeView(QWidget):
                 ok = inp.exec_()
 
                 if ok and inp.select:
-                    new = os.path.join(get_data_folder(), inp.select, os.path.basename(data))
+                    folder = inp.select
+                    if inp.select.startswith(os.sep):
+                        folder = inp.select.replace(os.sep, "", 1)
+                    new = os.path.join(get_data_folder(), folder, os.path.basename(data))
                     try:
                         os.rename(data, new)
                     except Exception as ex:
@@ -394,9 +397,10 @@ class FileTreeView(QWidget):
                 # input_name.setStyleSheet(open(get_stylesheet()).read())
                 # text, ok = input_name.getText(self, 'Duplicate file', 'New name:')
                 inp = QComboDialog('Duplicate file', 'New name:', QComboDialog.Text)
+                filename, file_extension = os.path.splitext(data)
+                inp.set_init_text(filename)
                 ok = inp.exec_()
                 if ok and inp.select:
-                    filename, file_extension = os.path.splitext(data)
                     new = os.path.join(os.path.dirname(data), inp.select + file_extension)
                     try:
                         copyfile(data, new)
@@ -413,7 +417,10 @@ class FileTreeView(QWidget):
                 #                                 "Select the destination folder", items, 0, False)
 
                 if ok and inp.select:
-                    new = os.path.join(get_data_folder(), inp.select, os.path.basename(data))
+                    folder = inp.select
+                    if inp.select.startswith(os.sep):
+                        folder = inp.select.replace(os.sep, "", 1)
+                    new = os.path.join(get_data_folder(), folder, os.path.basename(data))
                     try:
                         copyfile(data, new)
                     except Exception as ex:

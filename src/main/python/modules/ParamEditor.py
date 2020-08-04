@@ -14,6 +14,7 @@ class ParamEditor(QTabWidget):
     jsonData = {}
     isParseError = False
     error = pyqtSignal(str, str)
+    format_data = []
 
     horizontal_tab = 0
     vertical_tab = 1
@@ -282,3 +283,9 @@ class ParamEditor(QTabWidget):
                     obj[i].append(new)
             else:
                 self.duplicate_data(obj[i], link, new, index + 1, end)
+
+    def text(self):
+        return self.json_edit.toPlainText()
+
+    def set_format_data(self, data):
+            self.format_data = data

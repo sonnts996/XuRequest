@@ -88,8 +88,9 @@ class ResultFormatManager(QDialog):
 
     def apply(self):
         for a in self.data_json:
-            if a == "":
+            if a == "" or a.isspace():
                 del a
 
         self.apply_done.emit(self.data_json)
         self.destroy()
+

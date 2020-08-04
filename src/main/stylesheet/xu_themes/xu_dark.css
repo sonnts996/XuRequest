@@ -39,8 +39,8 @@ QTextEdit, QLineEdit {
     font-size: 14px;
 }
 
-#ParamEditor{
-    font-size: 14px;
+#FrameTab::pane{
+    padding: 8px 8px 8px 0;
 }
 
 QLabel {

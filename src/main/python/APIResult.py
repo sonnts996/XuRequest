@@ -168,10 +168,10 @@ class APIResult(QSplitter):
         data = self.w_result.toPlainText()
         if self.viewer is None:
             self.viewer = JSONApplication.run()
-            self.viewer.load(data, self.api_data.parseConfig().api())
+            self.viewer.load(data, self.tab_id, self.api_data.parseConfig().api())
             self.viewer.showMaximized()
         else:
-            self.viewer.load(data, self.api_data.parseConfig().api())
+            self.viewer.load(data, self.tab_id, self.api_data.parseConfig().api())
             self.viewer.showMaximized()
 
     def show_ask_save_dialog(self, res: str, rs: APIData):

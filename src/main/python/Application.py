@@ -327,6 +327,7 @@ class Application(QMainWindow):
     def json_viewer(self):
         if self.json_view is None:
             self.json_view = JSONApplication.run()
+            self.json_view.load({})
             self.json_view.showMaximized()
         else:
             self.json_view.showMaximized()

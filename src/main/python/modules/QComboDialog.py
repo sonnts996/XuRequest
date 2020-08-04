@@ -49,6 +49,10 @@ class QComboDialog(QDialog):
         v.addLayout(h)
         self.setLayout(v)
 
+    def set_init_text(self, text):
+        if self.tpe == self.Text:
+            self.combobox.setText(text)
+
     def ok_connect(self):
         if self.tpe == self.Text:
             self.select = self.combobox.text()
