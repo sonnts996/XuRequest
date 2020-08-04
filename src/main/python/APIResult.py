@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QGroupBox, QPushButton, QSplitter, QCheckBox, \
     QSizePolicy, QMessageBox, QLineEdit
 
+from src.main.plugin.viewer import JSONApplication
 from src.main.python import Application
 from src.main.python.ResultFormatManager import ResultFormatManager
 from src.main.python.model.APIData import APIData
@@ -29,6 +30,7 @@ class APIResult(QSplitter):
         self.w_console = JSONEditor()
         self.w_status_code = QLabel()
         self.w_url = QLineEdit()
+        self.viewer = None
 
         self.format_manager = None
         self.api_data = APIData()
@@ -39,10 +41,10 @@ class APIResult(QSplitter):
         parent.app_close.connect(self.handle_close)
         parent.tab_action.connect(self.tab_action)
         if data is not None:
-            api_data = json.loads(open(data).read())
+            api_data = json.loads(open(data, encoding="utf-8").read())
             self.api_data.construct(api_data)
             try:
-                api_data = json.loads(open(data).read())
+                api_data = json.loads(open(data, encoding="utf-8").read())
                 self.api_data.construct(api_data)
             except Exception as ex:
                 self.console("Load data 2:", str(ex))
@@ -93,6 +95,11 @@ class APIResult(QSplitter):
         w_format.setToolTip("Format result (Ctrl+B)")
         w_format.pressed.connect(self.format_result)
 
+        w_open_view = QPushButton()
+        w_open_view.setIcon(QIcon(get_icon_link('open_in_new.svg')))
+        w_open_view.setToolTip("JSON Viewer")
+        w_open_view.pressed.connect(self.open_view)
+
         self.w_format_field.setSizePolicy(QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed))
         self.set_format_text(self.api_data.parseConfig().format())
         self.format_backup = self.api_data.parseConfig().format()
@@ -106,6 +113,7 @@ class APIResult(QSplitter):
         l_hbox.addWidget(self.w_format_label, alignment=Qt.AlignLeft)
         l_hbox.addWidget(self.w_format_field)
         l_hbox.addWidget(w_format, alignment=Qt.AlignRight)
+        l_hbox.addWidget(w_open_view, alignment=Qt.AlignRight)
 
         w_gr_vbox_result = QVBoxLayout()
         w_gr_vbox_result.addLayout(l_hbox)
@@ -156,6 +164,16 @@ class APIResult(QSplitter):
             else:
                 self.save(rs)
 
+    def open_view(self):
+        data = self.w_result.toPlainText()
+        if self.viewer is None:
+            self.viewer = JSONApplication.run()
+            self.viewer.load(data, self.api_data.parseConfig().api())
+            self.viewer.showMaximized()
+        else:
+            self.viewer.load(data, self.api_data.parseConfig().api())
+            self.viewer.showMaximized()
+
     def show_ask_save_dialog(self, res: str, rs: APIData):
         msg = QMessageBox()
         msg.setStyleSheet(open(get_stylesheet()).read())
@@ -181,9 +199,9 @@ class APIResult(QSplitter):
             path = path + ".json"
         folder_name = rs.parseSave().parseFolder().name()
         if folder_name == "root":
-            path = os.path.join(rs.parseSave().parseFolder().parent(),path)
+            path = os.path.join(rs.parseSave().parseFolder().parent(), path)
         else:
-            path = os.path.join(rs.parseSave().parseFolder().parent() ,folder_name , path)
+            path = os.path.join(rs.parseSave().parseFolder().parent(), folder_name, path)
 
         if os.path.isfile(path):
             f = open(path, "r", encoding="utf-8")

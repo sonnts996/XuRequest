@@ -1,6 +1,7 @@
 QWidget {
     background-color: #363636;
     color: #FFFFFF;
+    font-size: 13px;
 }
 
 QWidget#Layout {
@@ -35,6 +36,11 @@ QTextEdit, QLineEdit {
     border: 1px #1f1f1f solid;
     padding: 4px;
     margin: 0;
+    font-size: 14px;
+}
+
+#ParamEditor{
+    font-size: 14px;
 }
 
 QLabel {
@@ -57,16 +63,21 @@ QDialog PushButton{
     min-width: 100px;
 }
 
-QTabWidget::pane {
+QTabWidget::pane:top {
     border-top: 1px solid orangered;
     padding-top: 5px;
+}
+
+QTabWidget::pane:left {
+    border-left: 1px solid yellowgreen;
+    padding-left: 5px;
 }
 
 QTabBar, QTabWidget {
     background-color: transparent;
 }
 
-QTabBar::tab {
+QTabBar::tab:top {
     min-width: 50px;
     margin-top: 4px;
     background-color: #424242;
@@ -76,15 +87,32 @@ QTabBar::tab {
     margin-left: 4px;
 }
 
+QTabBar::tab:left {
+    min-height: 50px;
+    margin-top: 4px;
+    background-color: #424242;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    padding: 8px 4px;
+    margin-left: 4px;
+}
+
 QTabBar::tab:hover {
     background-color: #636363;
 }
 
-QTabBar::tab:selected {
+QTabBar::tab:top:selected {
     background-color: orangered;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     padding: 4px 8px 4px 8px;
+}
+
+QTabBar::tab:left:selected {
+    background-color: yellowgreen;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    padding: 8px 4px;
 }
 
 QTabBar::close-button {

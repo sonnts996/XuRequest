@@ -6,7 +6,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 
-from src.main.plugin import JSONViewer
+from src.main.plugin.viewer import JSONApplication
 from src.main.python.APILinkManager import APILinkManager
 from src.main.python.AboutDialog import AboutDialog
 from src.main.python.FileTreeView import FileTreeView
@@ -176,7 +176,7 @@ class Application(QMainWindow):
         workspace_menu.addAction(close_others_action)
 
         json_action = QAction(QIcon(get_icon_link('json.svg')), '&JSON Viewer', self)
-        json_action.setShortcut('')
+        json_action.setShortcut('Ctrl+V')
         json_action.setStatusTip('Application information')
         json_action.triggered.connect(self.json_viewer)
 
@@ -326,6 +326,7 @@ class Application(QMainWindow):
 
     def json_viewer(self):
         if self.json_view is None:
-            self.json_view = JSONViewer.run([])
+            self.json_view = JSONApplication.run()
+            self.json_view.showMaximized()
         else:
             self.json_view.showMaximized()

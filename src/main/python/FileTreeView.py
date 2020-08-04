@@ -153,7 +153,7 @@ class FileTreeView(QWidget):
 
     def import_data_by_path(self, parent, path: list, index):
         if index < len(path):
-            full = "/".join(path[:index + 1])
+            full = os.sep.join(path[:index + 1])
             if full in self.item_construct:
                 item = self.item_construct[full]
             else:
@@ -196,7 +196,7 @@ class FileTreeView(QWidget):
 
     def remove_single(self, file_path):
         path = self.path_extract(file_path)
-        full = "/".join(path[:len(path)])
+        full = os.sep.join(path[:len(path)])
         if full in self.item_construct:
             item = self.item_construct[full]
             (item.parent() or self.model.invisibleRootItem()).removeRow(item.row())
@@ -209,9 +209,9 @@ class FileTreeView(QWidget):
             path = file_path
 
         path = path.replace(get_data_folder(), "")
-        if path.startswith("/"):
-            path = path.replace("/", "", 1)
-        path = path.split("/")
+        if path.startswith(os.sep):
+            path = path.replace(os.sep, "", 1)
+        path = path.split(os.sep)
         return path
 
     def open_menu(self, position):

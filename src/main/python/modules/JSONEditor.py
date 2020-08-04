@@ -9,7 +9,7 @@ from src.main.python.modules.module import color_json
 class JSONEditor(QTextEdit):
     def __init__(self):
         super().__init__()
-
+        self.setObjectName("JSONEditor")
         self.config_tab_width()
         self.installEventFilter(self)
 

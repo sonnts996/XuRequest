@@ -15,8 +15,12 @@ class ParamEditor(QTabWidget):
     isParseError = False
     error = pyqtSignal(str, str)
 
-    def __init__(self):
+    horizontal_tab = 0
+    vertical_tab = 1
+
+    def __init__(self, mode=0):
         super().__init__()
+        self.setObjectName("ParamEditor")
         self.json_edit = JSONEditor()
         self.table_edit = QTreeView()
         self.model = QStandardItemModel()
@@ -31,6 +35,9 @@ class ParamEditor(QTabWidget):
         self.table_edit.customContextMenuRequested.connect(self.open_menu)
         self.model.itemChanged.connect(self.data_change)
         self.currentChanged.connect(self.tab_selected)
+
+        if mode == self.vertical_tab:
+            self.setTabPosition(QTabWidget.West)
 
     def set_json_data(self, param):
         self.jsonData = param

@@ -47,7 +47,7 @@ class APIConfigure(QSplitter):
         self.file_data = MyFile()
         if data is not None:
             try:
-                api_data = json.loads(open(data).read())
+                api_data = json.loads(open(data, encoding="utf-8").read())
                 self.api_data.construct(api_data)
 
                 self.file_data.setParent(os.path.dirname(data))
@@ -203,8 +203,8 @@ class APIConfigure(QSplitter):
             for data in self.list_folder:
                 name = os.path.join(data.parent(), data.name())
                 name = name.replace(get_data_folder(), "")
-                if name == "/root":
-                    name = "root"
+                if name == os.sep + "root":
+                    name = "<root>"
                 self.folder.addItem(name, data)
             self.folder.setCurrentIndex(0)
         else:
@@ -213,8 +213,8 @@ class APIConfigure(QSplitter):
             for data in self.list_folder:
                 name = os.path.join(data.parent(), data.name())
                 name = name.replace(get_data_folder(), "")
-                if name == "/root":
-                    name = "root"
+                if name == os.sep + "root":
+                    name = "<root>"
                 self.folder.addItem(name, data)
                 if folder.parent() == data.parent() and folder.name() == data.name():
                     index = count
@@ -239,13 +239,18 @@ class APIConfigure(QSplitter):
         self.w_widget_tab.sync()
 
     def load_api(self):
+        self.api_json = []
+        d = APILink()
+        d.setURL("")
+        d.setName("<empty>")
+        self.api_json.append(d)
         if os.path.isfile(get_link_file()):
             f = open(get_link_file(), "r", encoding="utf-8")
             data = f.read()
             f.close()
+
             try:
                 api_json = json.loads(data)
-                self.api_json = []
                 for api in api_json:
                     data = APILink()
                     data.construct(api)
@@ -253,15 +258,13 @@ class APIConfigure(QSplitter):
             except Exception as ex:
                 print(ex)
                 self.console.emit("Get API Link: ", str(ex))
-                self.api_json = []
-
         self.w_api_link.clear()
         selection = 0
         link = self.api_data.parseConfig().parseLink()
         count = 0
         for data in self.api_json:
             self.w_api_link.addItem(data.name(), data)
-            if data.url() == link.url():
+            if data.url() == link.url() or (link.name() == "<empty>" and data.name() == "<empty>"):
                 selection = count
             count += 1
         self.w_api_link.setCurrentIndex(selection)
