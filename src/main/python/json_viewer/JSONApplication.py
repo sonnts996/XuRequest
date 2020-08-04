@@ -10,8 +10,6 @@ from src.main.python.dialog.AboutDialog import AboutDialog
 from src.main.python.json_viewer.JSONViewer import JSONViewer
 from src.main.python.modules.module import *
 
-os.chdir(current_dir())
-
 
 class JSONApplication(QMainWindow):
     tab_action = pyqtSignal(str)
@@ -201,14 +199,3 @@ def run(argv=None):
                 else:
                     view.load(arv, tab_id)
     return view
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    arg = ""
-    if len(sys.argv) > 1:
-        arg = sys.argv[1:]
-    window = run(arg)
-    app.setQuitOnLastWindowClosed(True)
-    exit_code = app.exec_()
-    sys.exit(exit_code)
