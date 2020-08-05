@@ -96,7 +96,7 @@ class APIResult(QSplitter):
     def result(self, rs: APIData, is_save: bool, is_save_only=True):
         if is_save_only:
             res = self.api_data.parseReponse()
-            res.setContent(self.new_result.viewer().text())
+            res.setContent(self.new_result.current_viewer().text())
             rs.setResponse(res)
 
         self.api_data = rs

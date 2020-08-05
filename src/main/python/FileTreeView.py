@@ -34,7 +34,6 @@ class FileTreeView(QWidget):
         self.stopped = threading.Event()
         self.tree = QTreeView()
         self.handle = self.Handler(self)
-        self.list_file = []
         self.get_data_file()
         self.model = QtGui.QStandardItemModel()
         self.item_construct = {}
@@ -291,6 +290,7 @@ class FileTreeView(QWidget):
             if data != "":
                 self.on_menu_select.emit("open", data)
         elif action == refresh_action:
+            self.get_data_file()
             self.show_tree(self.list_file)
         elif action == expand_action:
             if item is not None:

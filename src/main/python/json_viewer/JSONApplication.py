@@ -48,7 +48,7 @@ class JSONApplication(QMainWindow):
         else:
             self.viewer.load(data, tab_id, tab_name)
 
-    def viewer(self):
+    def current_viewer(self):
         index = self.viewer.currentIndex()
         return self.viewer.widget(index)
 
