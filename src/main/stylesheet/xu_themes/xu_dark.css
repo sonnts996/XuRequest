@@ -499,3 +499,7 @@ QWidget#Layout {
     border-top: 0;
     padding-top: 0;
 }
+
+QMessageBox QTextEdit{
+    min-width: 500px;
+}

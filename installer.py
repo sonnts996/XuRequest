@@ -3,7 +3,7 @@ import os
 import PyInstaller.__main__
 
 request = [
-    '--name=Xu Request',
+    '--name=XuRequest',
     # '--onefile',
     '--noconsole',
     '--add-data=src\\main\\icons;icons',
@@ -14,7 +14,7 @@ request = [
 ]
 
 json_viewer = [
-    '--name=Xu JSON Viewer',
+    '--name=JSON XuViewer',
     # '--onefile',
     '--noconsole',
     '--add-data=src\\main\\icons;icons',
@@ -24,4 +24,4 @@ json_viewer = [
     os.path.join("", 'src\\main\\main_viewer.py'),
 ]
 
-PyInstaller.__main__.run(json_viewer)
+PyInstaller.__main__.run(request)

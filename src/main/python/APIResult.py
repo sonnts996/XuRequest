@@ -185,13 +185,27 @@ class APIResult(QSplitter):
             self.save_data(path, rs)
 
     def save_data(self, path: str, rs: APIData):
-        formatted_json = json.dumps(rs.data, sort_keys=True, indent=4)
-        fout = open(path, "w", encoding="utf-8")
-        fout.write(formatted_json)
-        fout.close()
-        print("save output to: " + path)
-        self.console("save output to", path)
-        self.save_done.emit()
+        try:
+            formatted_json = json.dumps(rs.data, sort_keys=True, indent=4)
+            fout = open(path, "w", encoding="utf-8")
+            fout.write(formatted_json)
+            fout.close()
+            print("save output to: " + path)
+            self.console("save output to", path)
+            self.save_done.emit()
+        except Exception as ex:
+            msg = QMessageBox()
+            msg.setStyleSheet(open(get_stylesheet()).read())
+            msg.setIcon(QMessageBox.Warning)
+
+            msg.setText("Save file Error.")
+            msg.setInformativeText("Something error when save file!")
+            msg.setWindowTitle("Save Error!!!")
+            detail = str(ex)
+            msg.setDetailedText(detail)
+            msg.addButton('Cancel', QMessageBox.NoRole)
+            msg.exec_()
+
 
     def print_status(self, r: int):
         return httprequest.print_response(r) + ": " + str(r)

@@ -176,8 +176,8 @@ class Application(QMainWindow):
         workspace_menu.addAction(close_others_action)
 
         json_action = QAction(QIcon(get_icon_link('json.svg')), '&JSON Viewer', self)
-        json_action.setShortcut('Ctrl+V')
-        json_action.setStatusTip('Application information')
+        json_action.setShortcut('Ctrl+J')
+        json_action.setStatusTip('JSON Viewer')
         json_action.triggered.connect(self.json_viewer)
 
         plugin_menu = main_menu.addMenu('&Plugin')
